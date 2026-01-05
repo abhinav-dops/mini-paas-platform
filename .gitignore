@@ -1,0 +1,38 @@
+# =====================
+# Terraform
+# =====================
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+
+# =====================
+# Go
+# =====================
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+
+# =====================
+# Environment / Secrets
+# =====================
+.env
+.env.*
+*.pem
+*.key
+
+# =====================
+# OS / Editor
+# =====================
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# =====================
+# Logs
+# =====================
+*.log
