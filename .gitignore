@@ -36,3 +36,4 @@ terraform.tfstate.backup
 # Logs
 # =====================
 *.log
+sample-app
