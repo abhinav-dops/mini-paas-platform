@@ -19,3 +19,10 @@ func Destroy(path string) error {
 	cmd.Dir = path
 	return cmd.Run()
 }
+
+func Output(path string) (string, error) {
+	cmd := exec.Command("terraform", "output", "-raw", "public_ip")
+	cmd.Dir = path
+	out, err := cmd.Output()
+	return string(out), err
+}
