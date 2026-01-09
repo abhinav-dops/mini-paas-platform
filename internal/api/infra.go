@@ -2,7 +2,7 @@ package api
 
 type InfraStatus struct {
 	Status string `json:"status"`
-	Ip     string `json:"ip,omitempty"`
+	IP     string `json:"ip,omitempty"`
 	Error  string `json:"error,omitempty"`
 }
 

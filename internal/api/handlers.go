@@ -17,6 +17,11 @@ func DeployApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if Infra.Status != "ready" {
+		http.Error(w, "infra not ready", http.StatusPreconditionFailed)
+		return
+	}
+
 	var app App
 	if err := json.NewDecoder(r.Body).Decode(&app); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
