@@ -5,4 +5,5 @@ type App struct {
 	Repo   string `json:"repo"`
 	Port   int    `json:"port"`
 	Status string `json:"status"`
+	Error  string `json:"error,omitempty"`
 }
