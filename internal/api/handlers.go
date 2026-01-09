@@ -8,6 +8,12 @@ import (
 var apps = make(map[string]App)
 
 func DeployApp(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	var app App
 	if err := json.NewDecoder(r.Body).Decode(&app); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
@@ -16,6 +22,9 @@ func DeployApp(w http.ResponseWriter, r *http.Request) {
 
 	app.Status = "pending"
 	apps[app.Name] = app
+
+	// async execution (stub)
+	go executeDeployment(app.Name)
 
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(app)
