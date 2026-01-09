@@ -2,7 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
+
+	"github.com/abhinav-dops/mini-paas-platform/internal/docker"
 )
 
 var apps = make(map[string]App)
@@ -23,7 +26,7 @@ func DeployApp(w http.ResponseWriter, r *http.Request) {
 	app.Status = "pending"
 	apps[app.Name] = app
 
-	// async execution (stub)
+	// async execution
 	go executeDeployment(app.Name)
 
 	w.WriteHeader(http.StatusAccepted)
@@ -36,4 +39,20 @@ func ListApps(w http.ResponseWriter, _ *http.Request) {
 		list = append(list, app)
 	}
 	json.NewEncoder(w).Encode(list)
+}
+
+func executeDeployment(appName string) {
+	app := apps[appName]
+
+	err := docker.RunContainer(app.Name, app.Port, "sample:latest")
+	if err != nil {
+		app.Status = "failed"
+		app.Error = err.Error()
+		apps[appName] = app
+		return
+	}
+
+	app.Status = "running"
+	apps[appName] = app
+	log.Printf("app %s running", app.Name)
 }
