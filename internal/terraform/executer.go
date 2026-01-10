@@ -1,22 +1,31 @@
 package terraform
 
-import "os/exec"
+import (
+	"os"
+	"os/exec"
+)
 
 func Init(path string) error {
 	cmd := exec.Command("terraform", "init")
 	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
 
 func Apply(path string) error {
 	cmd := exec.Command("terraform", "apply", "-auto-approve")
 	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
 
 func Destroy(path string) error {
 	cmd := exec.Command("terraform", "destroy", "-auto-approve")
 	cmd.Dir = path
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
 
