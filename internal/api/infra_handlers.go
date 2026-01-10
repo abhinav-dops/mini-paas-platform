@@ -7,15 +7,22 @@ import (
 	tf "github.com/abhinav-dops/mini-paas-platform/internal/terraform"
 )
 
-const terraformPath = "./terraform"
+const terraformPath = "../../terraform"
 
 func ProvisionInfra(w http.ResponseWriter, _ *http.Request) {
+	if Infra.Status == "pending" {
+		http.Error(w, "infra provisioning already in progress", http.StatusConflict)
+		return
+	}
+
 	if Infra.Status == "ready" {
 		json.NewEncoder(w).Encode(Infra)
 		return
 	}
 
 	Infra.Status = "pending"
+	Infra.Error = ""
+	Infra.IP = ""
 
 	go func() {
 		if err := tf.Init(terraformPath); err != nil {
@@ -28,6 +35,7 @@ func ProvisionInfra(w http.ResponseWriter, _ *http.Request) {
 			Infra.Error = err.Error()
 			return
 		}
+
 		ip, err := tf.Output(terraformPath)
 		if err != nil {
 			Infra.Status = "failed"
