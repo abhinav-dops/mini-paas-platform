@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/abhinav-dops/mini-paas-platform/internal/docker"
@@ -49,7 +48,21 @@ func ListApps(w http.ResponseWriter, _ *http.Request) {
 func executeDeployment(appName string) {
 	app := apps[appName]
 
-	err := docker.RunContainer(app.Name, app.Port, "sample:latest")
+	if Infra.Status != "ready" {
+		app.Status = "failed"
+		app.Error = "infra not ready"
+		apps[appName] = app
+		return
+	}
+
+	err := docker.RunRemoteContainer(
+		Infra.IP,
+		"C:/Users/abhin/.ssh/mini-paas-key.pem",
+		app.Name,
+		app.Port,
+		"sample:latest",
+	)
+
 	if err != nil {
 		app.Status = "failed"
 		app.Error = err.Error()
@@ -59,5 +72,5 @@ func executeDeployment(appName string) {
 
 	app.Status = "running"
 	apps[appName] = app
-	log.Printf("app %s running", app.Name)
+	// log.Printf("app %s running", app.Name)
 }
