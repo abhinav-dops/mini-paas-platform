@@ -11,4 +11,5 @@ variable "instance_type" {
 variable "key_name" {
   description = "EC2 Key pair name"
   type = string
+  default = "mini-paas-key"
 }
