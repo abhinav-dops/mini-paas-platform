@@ -2,8 +2,11 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 
+	"github.com/abhinav-dops/mini-paas-platform/internal/config"
 	"github.com/abhinav-dops/mini-paas-platform/internal/docker"
 )
 
@@ -55,13 +58,35 @@ func executeDeployment(appName string) {
 		return
 	}
 
+	image := fmt.Sprintf("mini-paas%s:latest", app.Name)
+
+	if err := docker.CloneRepo(Infra.IP, config.SSHKeyPath, app.Repo); err != nil {
+		app.Status = "failed"
+		app.Error = err.Error()
+		apps[appName] = app
+		return
+	}
+
+	if err := docker.BuildImage(Infra.IP, config.SSHKeyPath, image); err != nil {
+		app.Status = "failed"
+		app.Error = err.Error()
+		apps[appName] = app
+		return
+	}
+
 	err := docker.RunRemoteContainer(
 		Infra.IP,
-		"C:/Users/abhin/.ssh/mini-paas-key.pem",
+		config.SSHKeyPath,
 		app.Name,
 		app.Port,
-		"sample:latest",
+		image,
 	)
+
+	if err := docker.HealthCheck(Infra.IP, config.SSHKeyPath, app.Port); err != nil {
+		app.Status = "unhealthy"
+		app.Error = "health check failed"
+		return
+	}
 
 	if err != nil {
 		app.Status = "failed"
@@ -73,4 +98,26 @@ func executeDeployment(appName string) {
 	app.Status = "running"
 	apps[appName] = app
 	// log.Printf("app %s running", app.Name)
+}
+
+func DestroyApp(w http.ResponseWriter, r *http.Request) {
+	name := strings.TrimPrefix(r.URL.Path, "/apps/")
+
+	if _, ok := apps[name]; !ok {
+		http.Error(w, "app not found", 404)
+		return
+	}
+
+	err := docker.RemoveContainer(
+		Infra.IP,
+		config.SSHKeyPath,
+		name,
+	)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	delete(apps, name)
+	w.Write([]byte("deleted"))
 }
