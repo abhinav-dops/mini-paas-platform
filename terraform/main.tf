@@ -50,7 +50,7 @@ resource "aws_instance" "platform_ec2" {
               sudo systemctl start docker
               sudo systemctl enable docker
               sudo usermod -a -G docker ec2-user
-
+              sudo dnf install git -y
               EOF
 
   tags = {
