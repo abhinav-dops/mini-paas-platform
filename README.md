@@ -195,30 +195,7 @@ DELETE /apps/{name}
 
 ---
 
-## Design Trade-offs
-
-**Deliberate scope decisions:**
-
-* Single EC2 host
-* Single environment
-* No Kubernetes
-* No load balancers
-
-These choices prioritize **clarity, correctness, and platform fundamentals** over complexity.
-
----
-
-## Future Improvements
-
-* Automatic port allocation
-* Reverse proxy (NGINX) for routing
-* Persistent state store
-* CI-triggered deployments
-* Multi-host support
-
----
-
-## Resume Highlight
+## Main 
 
 > Designed and built an internal developer platform using Go, Terraform, Docker, and AWS that enables self-service application deployments with automated infrastructure provisioning, remote container orchestration, and health monitoring.
 
@@ -233,10 +210,5 @@ These choices prioritize **clarity, correctness, and platform fundamentals** ove
 
 ---
 
-## Project Status
-
-✔ Core platform complete
-✔ Infrastructure automation implemented
-✔ Multi-application support enabled
-
 This project represents a **foundational internal PaaS implementation** aligned with real-world platform engineering practices.
+
