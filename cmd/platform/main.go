@@ -22,3 +22,5 @@ func main() {
 
 	log.Fatal(http.ListenAndServe(":9000", nil))
 }
+
+// atleast wait 1min after provisioning infra before deploying apps

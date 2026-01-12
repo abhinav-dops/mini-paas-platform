@@ -30,6 +30,11 @@ func DeployApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if app.ContainerPort == 0 {
+		http.Error(w, "container_port is required", http.StatusBadRequest)
+		return
+	}
+
 	app.Status = "pending"
 	apps[app.Name] = app
 
@@ -79,6 +84,7 @@ func executeDeployment(appName string) {
 		config.SSHKeyPath,
 		app.Name,
 		app.Port,
+		app.ContainerPort,
 		image,
 	)
 
